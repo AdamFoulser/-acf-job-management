@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ACF App – Job Management V1</title>
+<style>
+:root{--nav:#10253f;--blue:#1570ef;--bg:#f4f6f8;--card:#fff;--text:#17212b;--muted:#6b7785;--green:#17875d;--amber:#b66b00;--red:#b42318;--line:#dfe4ea}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--nav);color:#fff;padding:16px 18px 12px;position:sticky;top:0;z-index:4}
+.brand{font-weight:800;font-size:20px}.brand span{font-weight:500;opacity:.8;font-size:13px;margin-left:7px}
+nav{display:flex;gap:5px;overflow:auto;padding-top:12px}.navbtn{border:0;background:transparent;color:#cbd5e1;padding:9px 11px;border-radius:8px;font-weight:650;white-space:nowrap}.navbtn.active{background:#fff;color:var(--nav)}
+main{max-width:1180px;margin:auto;padding:16px}.screen{display:none}.screen.active{display:block}
+h1{font-size:24px;margin:4px 0 4px} .sub{color:var(--muted);margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:0 1px 2px #00000008}
+.metric b{display:block;font-size:27px;margin-top:5px}.metric small,.muted{color:var(--muted)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0}.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:700;background:var(--blue);color:white}.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line)}.btn.green{background:var(--green)}
+table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:14px}th{background:#f8fafc;color:#52606d}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#e8f1ff;color:#1458b0}.badge.amber{background:#fff2d9;color:#8a5200}.badge.green{background:#e4f6ed;color:#126b49}
+.upload{border:2px dashed #aeb8c4;border-radius:14px;background:white;text-align:center;padding:28px 16px}.upload input{display:none}
+.preview{margin-top:14px;display:none}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:#f8fafc;border:1px solid var(--line);padding:10px;border-radius:8px}.field small{display:block;color:var(--muted);margin-bottom:4px}
+.diarywrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:12px}.diary{min-width:850px;display:grid;grid-template-columns:75px repeat(4,1fr)}.dcell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-height:68px;padding:7px}.head{background:#f8fafc;font-weight:750;min-height:auto}.time{color:var(--muted);font-size:13px}.job{background:#e8f1ff;border-left:4px solid var(--blue);padding:7px;border-radius:6px;font-size:12px}.job.green{background:#e4f6ed;border-color:var(--green)}.job.amber{background:#fff2d9;border-color:#d78a0a}
+.property{cursor:pointer}.property:hover{background:#fafcff}.detail{display:none;margin-top:14px}.tabs{display:flex;gap:6px;overflow:auto;margin:12px 0}.tab{padding:8px 11px;border:1px solid var(--line);background:#fff;border-radius:8px;font-weight:650}
+@media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr}main{padding:12px}th:nth-child(3),td:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<header><div class="brand">ACF Services Ltd <span>Job Management V1 Demo</span></div>
+<nav>
+<button class="navbtn active" data-screen="dashboard">Dashboard</button>
+<button class="navbtn" data-screen="jobs">Jobs</button>
+<button class="navbtn" data-screen="diary">Diary</button>
+<button class="navbtn" data-screen="properties">Properties</button>
+<button class="navbtn" data-screen="invoices">Invoices</button>
+</nav></header>
+<main>
+<section id="dashboard" class="screen active">
+<h1>Good morning</h1><p class="sub">Monday 31 August · ACF Services Ltd</p>
+<div class="grid">
+<div class="card metric"><small>Unscheduled jobs</small><b id="unscheduled">3</b></div>
+<div class="card metric"><small>Today's jobs</small><b>8</b></div>
+<div class="card metric"><small>Ready to invoice</small><b>5</b></div>
+<div class="card metric"><small>Outstanding invoices</small><b>£4,286</b></div>
+</div>
+<div class="actions"><button class="btn" onclick="show('jobs');setTimeout(()=>document.getElementById('pdf').click(),200)">＋ Upload Works Order</button><button class="btn secondary" onclick="show('diary')">Open Diary</button><button class="btn secondary" onclick="show('properties')">Find Property</button></div>
+<div class="card"><h3 style="margin-top:0">New / Unscheduled</h3>
+<table><tr><th>Property</th><th>Work</th><th>Agent</th><th>Status</th></tr>
+<tr id="bylandsrow"><td><b>9 Bylands, Woking</b><br><small>GU22 7LA</small></td><td>GSR & Boiler Service</td><td>Seymours Woking</td><td><span class="badge amber">Tenant to contact</span></td></tr>
+<tr><td><b>42 Oakfield Road</b></td><td>Leaking kitchen tap</td><td>Seymours</td><td><span class="badge">New</span></td></tr>
+</table></div>
+</section>
+
+<section id="jobs" class="screen">
+<h1>Jobs</h1><p class="sub">Upload a letting-agent works order or create a job manually.</p>
+<div class="upload"><h3>Upload Works Order PDF</h3><p class="muted">The live version will read the PDF, match the property and create the job.</p>
+<label class="btn" for="pdf">Choose PDF</label><input id="pdf" type="file" accept=".pdf" onchange="readDemo(this)"></div>
+<div id="preview" class="preview card"><h3>✓ Works order read</h3><div class="fields">
+<div class="field"><small>Property</small><b>9 Bylands, Woking, Surrey, GU22 7LA</b></div>
+<div class="field"><small>Job description</small><b>GSR & Boiler Service</b></div>
+<div class="field"><small>Contact</small><b>Derek Moody · 07368 637097</b></div>
+<div class="field"><small>Contact 2</small><b>Laura Moody · 07703 789267</b></div>
+<div class="field"><small>Agent</small><b>Seymours Woking</b></div>
+<div class="field"><small>Estimate</small><b>£172.00</b></div>
+</div><p><span class="badge green">Existing property found</span> Previous history and appliances will stay attached.</p>
+<button class="btn green" onclick="createJob()">Create Unscheduled Job</button></div>
+</section>
+
+<section id="diary" class="screen">
+<h1>Engineer Diary</h1><p class="sub">Admin view · move jobs between engineers and times.</p>
+<div class="actions"><button class="btn secondary">‹ Previous</button><button class="btn secondary">Today</button><button class="btn secondary">Next ›</button><button class="btn">＋ Book Job</button></div>
+<div class="diarywrap"><div class="diary">
+<div class="dcell head">Time</div><div class="dcell head">Adam</div><div class="dcell head">Engineer 2</div><div class="dcell head">Engineer 3</div><div class="dcell head">Subcontractor</div>
+<div class="dcell time">08:00</div><div class="dcell"><div class="job">12 High St<br><b>Boiler service</b></div></div><div class="dcell"></div><div class="dcell"><div class="job green">8 Manor Way<br><b>CP12</b></div></div><div class="dcell"></div>
+<div class="dcell time">09:00</div><div class="dcell"></div><div class="dcell"><div class="job amber">24 Park Rd<br><b>No heating</b></div></div><div class="dcell"></div><div class="dcell"><div class="job">51 Station Rd<br><b>Tap repair</b></div></div>
+<div class="dcell time">10:00</div><div class="dcell"></div><div class="dcell"></div><div class="dcell"><div class="job">17 Queens Ave<br><b>Service</b></div></div><div class="dcell"></div>
+<div class="dcell time">11:00</div><div class="dcell"><div class="job green">3 Church Ln<br><b>GSR</b></div></div><div class="dcell"></div><div class="dcell"></div><div class="dcell"></div>
+<div class="dcell time">12:00</div><div class="dcell"></div><div class="dcell"></div><div class="dcell"></div><div class="dcell"></div>
+<div class="dcell time">13:00</div><div class="dcell"></div><div class="dcell"><div class="job">77 Guildford Rd<br><b>Leak</b></div></div><div class="dcell"></div><div class="dcell"></div>
+</div></div></section>
+
+<section id="properties" class="screen">
+<h1>Properties</h1><p class="sub">Demo database · eventually your ~4,000 Commusoft properties.</p>
+<input placeholder="Search address, postcode, landlord..." style="width:100%;padding:13px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px;font-size:16px">
+<table><tr><th>Address</th><th>Agent</th><th>Last job</th><th>Appliances</th></tr>
+<tr class="property" onclick="document.getElementById('propdetail').style.display='block'"><td><b>9 Bylands, Woking, GU22 7LA</b></td><td>Seymours Woking</td><td>GSR & Service</td><td>2</td></tr>
+<tr><td><b>16 Tilstone Close, Eton Wick</b></td><td>Private</td><td>Boiler repair</td><td>1</td></tr></table>
+<div id="propdetail" class="detail card"><h2>9 Bylands</h2><p class="muted">Woking, Surrey, GU22 7LA</p>
+<div class="tabs"><button class="tab">Jobs</button><button class="tab">Appliances</button><button class="tab">Invoices</button><button class="tab">Certificates</button><button class="tab">Documents</button></div>
+<h3>Saved appliances</h3><table><tr><th>Type</th><th>Manufacturer / Model</th><th>Serial / GC</th></tr><tr><td>Boiler</td><td>Saved boiler record</td><td>Stored against property</td></tr><tr><td>Cooker</td><td>Saved appliance</td><td>Stored against property</td></tr></table>
+</div></section>
+
+<section id="invoices" class="screen"><h1>Invoices</h1><p class="sub">Jobs completed by engineers arrive here ready for admin to invoice.</p>
+<table><tr><th>Property</th><th>Job</th><th>Status</th><th>Total</th></tr><tr><td>3 Church Lane</td><td>Gas Safety Record</td><td><span class="badge green">Ready to invoice</span></td><td>—</td></tr><tr><td>18 Kings Road</td><td>Boiler repair</td><td><span class="badge">Sent</span></td><td>£174.00</td></tr></table></section>
+</main>
+<script>
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.screen===id));window.scrollTo(0,0)}
+document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>show(b.dataset.screen));
+function readDemo(inp){if(inp.files.length){document.getElementById('preview').style.display='block';document.getElementById('preview').scrollIntoView({behavior:'smooth'})}}
+function createJob(){alert('Demo: job created against existing property 9 Bylands and added to Unscheduled Jobs.');show('dashboard')}
+</script></body></html>
